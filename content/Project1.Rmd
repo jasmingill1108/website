@@ -1,0 +1,146 @@
+---
+title: "Project 1"
+date: "2019-12-10"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### Jasmin Gill Jg65472
+
+
+#### Libraries
+```{R}
+library(tidyr)
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+```
+
+
+#### Choosing Datasets
+```{R}
+data(package=.packages(all.available = TRUE))
+library("boot")
+data(melanoma)
+library("datasets")
+data("infert")
+```
+
+Dataset were chosen by looking through the datasets that are in R studio. One of the datasets that was chosen was the Melanoma one. This dataset contains measurements made of patients with malignant melanoma. This dataset contains variables like time (survival time in days since the operation), status (whether the patient lives or dies- 1:dead, 2:alive, 3:died from something unrelated to melanoma),sex, age, year of operation, thickness of tumor, and whether or not the patient had an ucler. The second dataset that was chosen was Infert. This dataset talks about Infertility after Spontaneous of Induced Abortion. The variables involved are Eduation (years od education), age, parity, number of prior induced abortions, case status, number of prior spontaneous abortions, matched set number, and stratum number. To me both of the datasets were interesting as someone who is a biology major. I was able to use both of them since they both had the variable "age" in common. Since the datasets are completely different from each other, I don't believe I'll find any potential associations between both datasets. 
+ 
+#### Untidy a Dataset
+```{R}
+untidy1<-melanoma%>%pivot_wider(names_from = "year",values_from = "thickness")
+
+```
+
+Since both of my datasets were tidy, I decided to untidy one of them. The dataset chosen to be made untidy was the Melanoma one. I used pivot wider to take away the values from thickness and placed them into the seperate year columns I made. 
+
+#### Tidying back the Dataset
+```{R}
+melanoma1<-untidy1%>%pivot_longer(cols=-(time:ulcer),names_to = "year")
+melanoma2<-na.omit(melanoma1)
+names(melanoma2)[7]<-"thickness"
+```
+
+To get it back to tidy I used the function pivot_longer and remade a column called "year". However this put all the thickness values under a column called "value". To fix this, I used the names function to rename "values" to "thicknesS".
+
+#### Joining the Datasets
+```{R}
+data<-full_join(melanoma2,infert,by="age")
+```
+
+I decided to fully join the datasets rather than taking out a few of the variables from either dataset. Because the variables are so different from each other, I wasn't sure which one's I would want to keep later or remove. For this reason, at this point I decided to just fully combine them by age. 
+
+
+#### Combine spontaenous and induced abortions into one column instead of having two seperate columns
+```{R}
+data1<-data%>%mutate(Abortions=spontaneous+induced)
+data1<-subset(data1, select = -spontaneous)
+data1<-subset(data1, select = -induced)
+```
+
+Rather than having seperate variables for the different types of abortions, I decided to combine them under one column using mutate() and called it "Abortions". To do this I added the spontaneous abortions with the induced abortions to get the total number of abortions under the "Abortions" column. 
+
+#### Change Sex column to categorical values instead of numerical (1= male, 0= female)
+```{R}
+data1<-data1%>%mutate(sex=recode(sex, '1'="male", '0'="female"))
+```
+
+At this point I only had one categorical variable, so I decided to create another one by converting the data from the sex variable. Before this colmn was numerical, with 1's and 0's, so I turned 1 to mean male and 0 to mean female like the data meant for the numbers to mean. 
+
+#### Sort age column from least to greatest
+```{R}
+data1<-data1%>%arrange(age)
+```
+
+I used the arrange() so that the the column age would be in order from least to greatest rather than random like it was before. 
+
+##### Take out unnessary columns
+```{R}
+data1<-data1%>%select(time, status, sex, age, year, education)
+data2<-na.omit(data1)
+```
+
+At this point I had decided that some of the columns weren't ones that I wanted in my final dataset so I used the select() to only keep time,status,sex,age,year, and education and named this data1. The only reason I decided to not keep the column the column I made previously,Abortions, was because it did not make sense to have it in there with the male population data. In the end I omitted al of the NA's in the dataset and named it data2. 
+
+#### Using Summary Statistics
+```{R}
+try1<-data2%>% group_by(education)%>%summarize(mean_age=mean(age, na.rm = T),sd_age=sd(age, na.rm=T), n=n(),se_age=sd_age/sqrt(n))
+try2<-data2%>% group_by(sex)%>%summarize(mean_age=mean(age, na.rm = T),sd_age=sd(age, na.rm=T), n=n(),se_age=sd_age/sqrt(n))
+try3<-data2%>%summarize(mean_time=mean(time, na.rm = T), n_rows=n(),n_age=n_distinct(age))
+try4<-data2%>%summarize(sd_time=sd(time, na.rm = T), n_rows=n(),n_age=n_distinct(age))
+try5<-data2%>%summarize(min_time=min(time, na.rm = T), n_rows=n(),n_age=n_distinct(age))
+try6<-data2%>%summarize(max_time=max(time, na.rm = T), n_rows=n(),n_age=n_distinct(age))
+try7<-data2%>%summarize(mean_age=mean(age, na.rm = T), n_rows=n(),n_time=n_distinct(time))
+try8<-data2%>%summarize(sd_age=sd(age, na.rm = T), n_rows=n(),n_time=n_distinct(time))
+try9<-data2%>%summarize(max_year=max(year, na.rm = T), n_rows=n(),n_status=n_distinct(status))
+try10<-data2%>%summarize(min_year=min(year, na.rm = T), n_rows=n(),n_status=n_distinct(status))
+```
+
+In this area I completed 10 different summary statistics using summarize and summarize with group_by. In the first one that I named "try 1" I found the mean, standard error, and standard deviation by grouping by educate and using age as my other variable. I did the same thing for "try 2" except grouped by sex. For the other 8 I summarized then without group_by by using either the mean, standard deviation, minimum, or maximum using the different variables from my combined dataset. 
+
+#### Filter Data so only the Female Population is visible
+```{R}
+data3<-data1%>%filter(sex=="female")
+```
+
+I used the filter() to filter the sex to just female rather than males just so that I could see the data from the female population rather than seeing data from both. 
+
+#### Make Visualizations
+```{R}
+ggplot(data = data2, aes(x = age, y = time , color = sex)) +geom_point() + ggtitle("Age of Patient vs Status of Patient") + geom_line() 
+
+
+ggplot(data2, aes(x = sex))+
+  geom_bar(aes(y= time),stat = "summary", fun.y = "mean")+
+  ggtitle("Sex vs Days Spent in Recovery") 
+```
+
+2 data plots were made, One was a line graph and the other one a bar graph. The line graph has age on the x axis and time on the y axis. The lines were colored based off the 2 sexes (male and female). From the graph I can see that the youngest patients that started their treatment were female. Whereas the youngest male to go under treatment was 25. Other than that, there wasn't a clear conclusion to be made from this graph which was previously expected to happen. For the bar graph the categorical variable is sex and the numerical variable on the y axis is time. From this graph it can be seen that more females have spent time in recovery compared to the number of males.
+
+#### PCA
+```{R}
+pca<-data2%>%select_if(is.numeric)%>%scale%>%prcomp
+summary(pca, loadings = T)
+eigenvals<-pca$sdev^2
+varprop=round(eigenvals/sum(eigenvals),2)
+ggplot()+geom_bar(aes(x=1:3, y=varprop),stat = "identity")+xlab("")+geom_path(aes(y=varprop,x=1:3))+
+  geom_text(aes(x=1:3, y=varprop, label=round(varprop,2)),vjust=1, col="white",size=5)+
+  scale_y_continuous(breaks = seq(0,.6,.2),labels=scales::percent)+
+  scale_x_continuous(breaks = 1:10)
+round(cumsum(eigenvals)/sum(eigenvals),2)
+eigenvals
+pca1<-data.frame(PC1=pca$rotation[3],PC2=pca$rotation[1,])
+ggplot(pca1, aes(PC1,PC2))+geom_point()+ggtitle("PCA Plot")
+
+```
+
+In order to decide which PC's I wanted to keep, I plotted the proportion of variance explained by each principal component from largest eigenvale to the smallest eingevale.The largest is 0.54,then 0.33, and the smallest is 0.13. Because the line didn't flatten, I decided to keep all of them rather than throwing some of out. For the second plot I plotted to compare the PC2 by PC1 by having Pc2 on the y-axis and PC1 on the x axis. This gave me 3 points in a vertical line (didn't connect it to make a line). One point was negative while the other 2 were positive. 
+
+

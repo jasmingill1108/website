@@ -1,0 +1,144 @@
+---
+title: "Project 1"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+
+
+<p>####Jasmin Gill Jg65472</p>
+<div id="libraries" class="section level4">
+<h4>Libraries</h4>
+<pre class="r"><code>library(tidyr)
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages ------------------ tidyverse 1.2.1 --</code></pre>
+<pre><code>## v ggplot2 3.2.1     v purrr   0.3.2
+## v tibble  2.1.3     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.4.0</code></pre>
+<pre><code>## -- Conflicts --------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(ggplot2)</code></pre>
+</div>
+<div id="choosing-datasets" class="section level4">
+<h4>Choosing Datasets</h4>
+<pre class="r"><code>data(package=.packages(all.available = TRUE))</code></pre>
+<pre><code>## Warning in data(package = .packages(all.available = TRUE)): datasets have been
+## moved from package &#39;base&#39; to package &#39;datasets&#39;</code></pre>
+<pre><code>## Warning in data(package = .packages(all.available = TRUE)): datasets have been
+## moved from package &#39;stats&#39; to package &#39;datasets&#39;</code></pre>
+<pre class="r"><code>library(&quot;boot&quot;)
+data(melanoma)
+help(melanoma)</code></pre>
+<pre><code>## starting httpd help server ... done</code></pre>
+<pre class="r"><code>library(&quot;datasets&quot;)
+data(&quot;infert&quot;)
+help(infert)</code></pre>
+<p>Dataset were chosen by looking through the datasets that are in R studio. One of the datasets that was chosen was the Melanoma one. This dataset contains measurements made of patients with malignant melanoma. This dataset contains variables like time (survival time in days since the operation), status (whether the patient lives or dies- 1:dead, 2:alive, 3:died from something unrelated to melanoma),sex, age, year of operation, thickness of tumor, and whether or not the patient had an ucler. The second dataset that was chosen was Infert. This dataset talks about Infertility after Spontaneous of Induced Abortion. The variables involved are Eduation (years od education), age, parity, number of prior induced abortions, case status, number of prior spontaneous abortions, matched set number, and stratum number. To me both of the datasets were interesting as someone who is a biology major. I was able to use both of them since they both had the variable “age” in common. Since the datasets are completely different from each other, I don’t believe I’ll find any potential associations between both datasets.</p>
+</div>
+<div id="untidy-a-dataset" class="section level4">
+<h4>Untidy a Dataset</h4>
+<pre class="r"><code>untidy1&lt;-melanoma%&gt;%pivot_wider(names_from = &quot;year&quot;,values_from = &quot;thickness&quot;)</code></pre>
+<p>Since both of my datasets were tidy, I decided to untidy one of them. The dataset chosen to be made untidy was the Melanoma one. I used pivot wider to take away the values from thickness and placed them into the seperate year columns I made.</p>
+</div>
+<div id="tidying-back-the-dataset" class="section level4">
+<h4>Tidying back the Dataset</h4>
+<pre class="r"><code>melanoma1&lt;-untidy1%&gt;%pivot_longer(cols=-(time:ulcer),names_to = &quot;year&quot;)
+melanoma2&lt;-na.omit(melanoma1)
+names(melanoma2)[7]&lt;-&quot;thickness&quot;</code></pre>
+<p>To get it back to tidy I used the function pivot_longer and remade a column called “year”. However this put all the thickness values under a column called “value”. To fix this, I used the names function to rename “values” to “thicknesS”.</p>
+</div>
+<div id="joining-the-datasets" class="section level4">
+<h4>Joining the Datasets</h4>
+<pre class="r"><code>data&lt;-full_join(melanoma2,infert,by=&quot;age&quot;)</code></pre>
+<p>I decided to fully join the datasets rather than taking out a few of the variables from either dataset. Because the variables are so different from each other, I wasn’t sure which one’s I would want to keep later or remove. For this reason, at this point I decided to just fully combine them by age.</p>
+</div>
+<div id="combine-spontaenous-and-induced-abortions-into-one-column-instead-of-having-two-seperate-columns" class="section level4">
+<h4>Combine spontaenous and induced abortions into one column instead of having two seperate columns</h4>
+<pre class="r"><code>data1&lt;-data%&gt;%mutate(Abortions=spontaneous+induced)
+data1&lt;-subset(data1, select = -spontaneous)
+data1&lt;-subset(data1, select = -induced)</code></pre>
+<p>Rather than having seperate variables for the different types of abortions, I decided to combine them under one column using mutate() and called it “Abortions”. To do this I added the spontaneous abortions with the induced abortions to get the total number of abortions under the “Abortions” column.</p>
+</div>
+<div id="change-sex-column-to-categorical-values-instead-of-numerical-1-male-0-female" class="section level4">
+<h4>Change Sex column to categorical values instead of numerical (1= male, 0= female)</h4>
+<pre class="r"><code>data1&lt;-data1%&gt;%mutate(sex=recode(sex, &#39;1&#39;=&quot;male&quot;, &#39;0&#39;=&quot;female&quot;))</code></pre>
+<p>At this point I only had one categorical variable, so I decided to create another one by converting the data from the sex variable. Before this colmn was numerical, with 1’s and 0’s, so I turned 1 to mean male and 0 to mean female like the data meant for the numbers to mean.</p>
+</div>
+<div id="sort-age-column-from-least-to-greatest" class="section level4">
+<h4>Sort age column from least to greatest</h4>
+<pre class="r"><code>data1&lt;-data1%&gt;%arrange(age)</code></pre>
+<p>I used the arrange() so that the the column age would be in order from least to greatest rather than random like it was before.</p>
+<div id="take-out-unnessary-columns" class="section level5">
+<h5>Take out unnessary columns</h5>
+<pre class="r"><code>data1&lt;-data1%&gt;%select(time, status, sex, age, year, education)
+data2&lt;-na.omit(data1)</code></pre>
+<p>At this point I had decided that some of the columns weren’t ones that I wanted in my final dataset so I used the select() to only keep time,status,sex,age,year, and education and named this data1. The only reason I decided to not keep the column the column I made previously,Abortions, was because it did not make sense to have it in there with the male population data. In the end I omitted al of the NA’s in the dataset and named it data2.</p>
+</div>
+</div>
+<div id="using-summary-statistics" class="section level4">
+<h4>Using Summary Statistics</h4>
+<pre class="r"><code>try1&lt;-data2%&gt;% group_by(education)%&gt;%summarize(mean_age=mean(age, na.rm = T),sd_age=sd(age, na.rm=T), n=n(),se_age=sd_age/sqrt(n))
+try2&lt;-data2%&gt;% group_by(sex)%&gt;%summarize(mean_age=mean(age, na.rm = T),sd_age=sd(age, na.rm=T), n=n(),se_age=sd_age/sqrt(n))
+try3&lt;-data2%&gt;%summarize(mean_time=mean(time, na.rm = T), n_rows=n(),n_age=n_distinct(age))
+try4&lt;-data2%&gt;%summarize(sd_time=sd(time, na.rm = T), n_rows=n(),n_age=n_distinct(age))
+try5&lt;-data2%&gt;%summarize(min_time=min(time, na.rm = T), n_rows=n(),n_age=n_distinct(age))
+try6&lt;-data2%&gt;%summarize(max_time=max(time, na.rm = T), n_rows=n(),n_age=n_distinct(age))
+try7&lt;-data2%&gt;%summarize(mean_age=mean(age, na.rm = T), n_rows=n(),n_time=n_distinct(time))
+try8&lt;-data2%&gt;%summarize(sd_age=sd(age, na.rm = T), n_rows=n(),n_time=n_distinct(time))
+try9&lt;-data2%&gt;%summarize(max_year=max(year, na.rm = T), n_rows=n(),n_status=n_distinct(status))
+try10&lt;-data2%&gt;%summarize(min_year=min(year, na.rm = T), n_rows=n(),n_status=n_distinct(status))</code></pre>
+<p>In this area I completed 10 different summary statistics using summarize and summarize with group_by. In the first one that I named “try 1” I found the mean, standard error, and standard deviation by grouping by educate and using age as my other variable. I did the same thing for “try 2” except grouped by sex. For the other 8 I summarized then without group_by by using either the mean, standard deviation, minimum, or maximum using the different variables from my combined dataset.</p>
+</div>
+<div id="filter-data-so-only-the-female-population-is-visible" class="section level4">
+<h4>Filter Data so only the Female Population is visible</h4>
+<pre class="r"><code>data3&lt;-data1%&gt;%filter(sex==&quot;female&quot;)</code></pre>
+<p>I used the filter() to filter the sex to just female rather than males just so that I could see the data from the female population rather than seeing data from both.</p>
+</div>
+<div id="make-visualizations" class="section level4">
+<h4>Make Visualizations</h4>
+<pre class="r"><code>ggplot(data = data2, aes(x = age, y = time , color = sex)) +geom_point() + ggtitle(&quot;Age of Patient vs Status of Patient&quot;) + geom_line() </code></pre>
+<p><img src="/Project1.rmd_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(data2, aes(x = sex))+
+  geom_bar(aes(y= time),stat = &quot;summary&quot;, fun.y = &quot;mean&quot;)+
+  ggtitle(&quot;Sex vs Days Spent in Recovery&quot;) </code></pre>
+<p><img src="/Project1.rmd_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
+<p>2 data plots were made, One was a line graph and the other one a bar graph. The line graph has age on the x axis and time on the y axis. The lines were colored based off the 2 sexes (male and female). From the graph I can see that the youngest patients that started their treatment were female. Whereas the youngest male to go under treatment was 25. Other than that, there wasn’t a clear conclusion to be made from this graph which was previously expected to happen. For the bar graph the categorical variable is sex and the numerical variable on the y axis is time. From this graph it can be seen that more females have spent time in recovery compared to the number of males.</p>
+</div>
+<div id="pca" class="section level4">
+<h4>PCA</h4>
+<pre class="r"><code>pca&lt;-data2%&gt;%select_if(is.numeric)%&gt;%scale%&gt;%prcomp
+summary(pca, loadings = T)</code></pre>
+<pre><code>## Warning: In summary.prcomp(pca, loadings = T) :
+##  extra argument &#39;loadings&#39; will be disregarded</code></pre>
+<pre><code>## Importance of components:
+##                           PC1    PC2    PC3
+## Standard deviation     1.2738 0.9878 0.6337
+## Proportion of Variance 0.5409 0.3253 0.1338
+## Cumulative Proportion  0.5409 0.8661 1.0000</code></pre>
+<pre class="r"><code>eigenvals&lt;-pca$sdev^2
+varprop=round(eigenvals/sum(eigenvals),2)
+ggplot()+geom_bar(aes(x=1:3, y=varprop),stat = &quot;identity&quot;)+xlab(&quot;&quot;)+geom_path(aes(y=varprop,x=1:3))+
+  geom_text(aes(x=1:3, y=varprop, label=round(varprop,2)),vjust=1, col=&quot;white&quot;,size=5)+
+  scale_y_continuous(breaks = seq(0,.6,.2),labels=scales::percent)+
+  scale_x_continuous(breaks = 1:10)</code></pre>
+<p><img src="/Project1.rmd_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<pre class="r"><code>round(cumsum(eigenvals)/sum(eigenvals),2)</code></pre>
+<pre><code>## [1] 0.54 0.87 1.00</code></pre>
+<pre class="r"><code>eigenvals</code></pre>
+<pre><code>## [1] 1.6225934 0.9758440 0.4015625</code></pre>
+<pre class="r"><code>pca1&lt;-data.frame(PC1=pca$rotation[3],PC2=pca$rotation[1,])
+ggplot(pca1, aes(PC1,PC2))+geom_point()+ggtitle(&quot;PCA Plot&quot;)</code></pre>
+<p><img src="/Project1.rmd_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
+<p>In order to decide which PC’s I wanted to keep, I plotted the proportion of variance explained by each principal component from largest eigenvale to the smallest eingevale.The largest is 0.54,then 0.33, and the smallest is 0.13. Because the line didn’t flatten, I decided to keep all of them rather than throwing some of out. For the second plot I plotted to compare the PC2 by PC1 by having Pc2 on the y-axis and PC1 on the x axis. This gave me 3 points in a vertical line (didn’t connect it to make a line). One point was negative while the other 2 were positive.</p>
+</div>
