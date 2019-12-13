@@ -1,7 +1,7 @@
 ---
 title: 'Project 2: Modeling, Testing, and Predicting'
 author: "SDS348 Fall 2019"
-date: ''
+date: "2019-12-10"
 output:
   pdf_document:
     toc: yes
@@ -11,6 +11,9 @@ output:
       collapsed: no
       smooth_scroll: yes
 ---
+
+#### Jasmin Gill Jg65472
+
 
 ```{r setup, include=FALSE}
 library(knitr)
@@ -33,7 +36,7 @@ library(tidyverse)
 
 # Modeling
 
-#0
+# 0
 ```{R}
 library("boot")
 data("melanoma")
@@ -42,7 +45,7 @@ melanoma<-subset(melanoma, select = -year)
 ```
 The dataset that I used was melanoma, this is data from Connecticut Tumor Registry. It presents age adjusted numbers of melanoma skin cancer incidences per 100,000 people in Connecitcut from 1936-1972. Some of the variables that it includes is age, year, status, ulcer, thickness, and sex. A variable that I took out was year just because I thought I already had a lot of variables.
 
-#1
+# 1
 ```{R}
 age<-melanoma$age
 time<-melanoma$time
@@ -61,7 +64,7 @@ pairwise.t.test(ulcer, status, p.adj = "none")
 ```
 A MANOVA test was performed to test if any of my numerical variables would show a mean different among levels on one of my categorical variables. The p values was 4.352e-07 which shows that there is a mean difference across levels of one of my categorical variables. So a ANOVA test was performed to find responses showing a mean difference across groups. Four post-hoc t tests were also performed to find which groups differ. All 4 tests differed by status. Since 4 hypothesis tests have been done, this requires an alteration in the 0.05 significance level. After adjusting the significance level, the new level is now 0.0125 and there is is still overall significance in all post-hoc tests. The assumptions have been met. 
 
-#2
+# 2
 ```{R}
 library(tidyverse)
 
@@ -78,7 +81,7 @@ mean(random>obs_F)
 ```
 The randomization test that I chose to perform is a permutation test. A permutation test determines whether the observed difference between the sample mens is large enough. The null hypothesis is that the data drawn from is the same distribution as the data drawn. The alternative hypothesis is that the data drawn from is not the same distribution as the data drawn from. The histogram shifts more to the left side, favoring zero the most. the mean of mean(random>obs_F) gave a value of 0.0156.
 
-#3
+# 3
 ```{R}
 melanoma_fit<- lm(time~age*thickness, data = melanoma)
 summary(melanoma_fit)
@@ -99,7 +102,7 @@ summary(melanoma_unfit)
 ```
 The intercept has a big positive change in it's slope while holding all other variables constant. For age, the coefficients tell us that there is a negative change in the slope in the data while all other variables were held constant. The coefficient for the thickness shows that there is a big positive change in the slope while all other variables are held constant. For the age:thickness, there was a small negative change in the slope while all other variables were held constant. A graph was made using the ggplot() to graph the regression. The line in the graph shows a negative slope. There are way too many outliers, and it does not seem that the linearity, normaily, and homoskedasticity assumptions are met graphically. After doing the heteroskedasticity test, the p-value showed to be significant which let me reject the null hypothesis. The SE's decreased slightly from the SE's before. The model explains a proportion of 0.1277 of the variation in the outcome. It seems that SE's decreased a lot in the one without the interactions as compared to the one where to the one with the interactions. 
 
-#4
+# 4
 ```{R}
 set.seed(348) 
  
@@ -126,7 +129,7 @@ sample(500)
 ```
 The same regression model, the one with the interactions was ran. This time, I computed bootstrapped standard errors. The p value decreased more from before whereas the standard errors increased from the original SE and the robust SE.
 
-#5
+# 5
 ```{R}
 class_diag<-function(probs,truth){
  tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
@@ -214,7 +217,7 @@ apply(diags1,2,mean)
 ```
 For the intercept, there was a slight negative change in its slope while holding all other variables constant. For the coefficient was a slight positive change in the slope for thickness while holding all other variables constant. For time coefficient, there was a slight negative change in the slope while holding other variables constant. The accuracy for the model is 0.7463415, the sensitivity is 0.5888889, the specificity is 0.8695652, and the PPV is 0.7794118. ggplot was used to plot the density of log-odds by my binary outcome variable. A ROC plot was also generated that somewhat represents a log graph. The auc calculated was 0.8171014 using a calc_auc. This AUC is close to 1 so it shows that it should have good measure of seperability. A 10-fold CV was performed along with a report of the average accuracy, sensitivity, and recall.
 
-#6
+# 6
 ```{R eval=F}
 library(glmnet)
 

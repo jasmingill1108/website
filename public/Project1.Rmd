@@ -1,5 +1,6 @@
 ---
 title: "Project 1"
+date: "2019-12-10"
 output:
   html_document: default
   pdf_document: default
@@ -9,7 +10,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-####Jasmin Gill Jg65472
+#### Jasmin Gill Jg65472
 
 
 #### Libraries
@@ -26,10 +27,8 @@ library(ggplot2)
 data(package=.packages(all.available = TRUE))
 library("boot")
 data(melanoma)
-help(melanoma)
 library("datasets")
 data("infert")
-help(infert)
 ```
 
 Dataset were chosen by looking through the datasets that are in R studio. One of the datasets that was chosen was the Melanoma one. This dataset contains measurements made of patients with malignant melanoma. This dataset contains variables like time (survival time in days since the operation), status (whether the patient lives or dies- 1:dead, 2:alive, 3:died from something unrelated to melanoma),sex, age, year of operation, thickness of tumor, and whether or not the patient had an ucler. The second dataset that was chosen was Infert. This dataset talks about Infertility after Spontaneous of Induced Abortion. The variables involved are Eduation (years od education), age, parity, number of prior induced abortions, case status, number of prior spontaneous abortions, matched set number, and stratum number. To me both of the datasets were interesting as someone who is a biology major. I was able to use both of them since they both had the variable "age" in common. Since the datasets are completely different from each other, I don't believe I'll find any potential associations between both datasets. 

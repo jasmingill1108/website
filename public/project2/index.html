@@ -193,7 +193,7 @@ SSB&lt;- new%&gt;%mutate(mean=mean(thickness))%&gt;%group_by(status)%&gt;%mutate
 hist(random, prob=T); abline(v = obs_F, col=&quot;red&quot;,add=T)</code></pre>
 <p><img src="/Project2_files/figure-html/unnamed-chunk-3-1.png" width="768" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>mean(random&gt;obs_F)</code></pre>
-<pre><code>## [1] 0.015</code></pre>
+<pre><code>## [1] 0.0158</code></pre>
 <p>The randomization test that I chose to perform is a permutation test. A permutation test determines whether the observed difference between the sample mens is large enough. The null hypothesis is that the data drawn from is the same distribution as the data drawn. The alternative hypothesis is that the data drawn from is not the same distribution as the data drawn from. The histogram shifts more to the left side, favoring zero the most. the mean of mean(random&gt;obs_F) gave a value of 0.0156.</p>
 </div>
 <div id="section-3" class="section level1">

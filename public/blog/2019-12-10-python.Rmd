@@ -1,9 +1,31 @@
 ---
-title: 'Python '
+title: 'Python'
 author: Jasmin Gill
 date: '2019-12-10'
 slug: python
 categories: []
 tags: []
-description: ''
+description: 'Explaining '
 ---
+### Beginners Python
+
+### Python is one of the most popular languages used in the computer science realm. Before trying to do more complex coding, it is important to first get the hang of some of the more basic codes. For the ones that are more comfortable progamming using R, this might be a good way to begin using python. 
+
+### By using library(reticulate), python coding can be done in RStudio! 
+
+```{r}
+library(reticulate)
+
+print("hello world")
+```
+
+### By importing numpy as np, we can even use python to perform basic calculations! Python can also be used to assign values to variables. The possibilites are endless!
+
+```{python}
+import numpy as np
+2+2
+3/4
+three = 3
+two = 2
+two + three
+```

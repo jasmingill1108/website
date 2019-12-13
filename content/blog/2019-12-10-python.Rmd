@@ -14,7 +14,6 @@ description: 'Explaining '
 ### By using library(reticulate), python coding can be done in RStudio! 
 
 ```{r}
-install.packages("reticulate")
 library(reticulate)
 
 print("hello world")
