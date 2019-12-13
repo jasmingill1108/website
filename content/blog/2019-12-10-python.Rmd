@@ -9,12 +9,13 @@ description: 'Explaining '
 ---
 ### Beginners Python
 
+![](/blog/2019-12-10-python_files/images.jpg)
+
 ### Python is one of the most popular languages used in the computer science realm. Before trying to do more complex coding, it is important to first get the hang of some of the more basic codes. For the ones that are more comfortable progamming using R, this might be a good way to begin using python. 
 
 ### By using library(reticulate), python coding can be done in RStudio! 
 
 ```{r}
-library(reticulate)
 
 print("hello world")
 ```
